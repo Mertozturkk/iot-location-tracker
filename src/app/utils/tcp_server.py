@@ -1,16 +1,23 @@
 import socket
 import asyncio
+import json
 from src.app.utils.queue import enqueue_data
 
 
 async def handle_client(reader, writer):
     try:
-        data = await reader.read(100)
-        print(f"Received: {data.decode()}")
-        message = data.decode()
-        enqueue_data(message)
-        writer.write(data)
-        await writer.drain()
+        data = await reader.readuntil(separator=b'\n')
+        message = data.decode().strip()
+        print(f"Received message: {message}")
+        try:
+            json_data = json.loads(message)
+            enqueue_data(json_data)
+            writer.write(b"Data received\n")
+            await writer.drain()
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON: {e}")
+            writer.write(b"Invalid JSON format\n")
+            await writer.drain()
     except Exception as e:
         print(f"Error handling client: {e}")
     finally:

@@ -11,6 +11,19 @@ from src.app.utils.validator import project_logger
 
 
 def create_device(device: DeviceCreate, db: Session = Depends(get_db)):
+    """
+        Create a new device and add a default location.
+
+        Args:
+            device (DeviceCreate): The device data to be created.
+            db (Session): The database session.
+
+        Returns:
+            The created device.
+
+        Raises:
+            HTTPException: If the device already exists or any other error occurs.
+        """
     try:
         existing_device = db.query(Device).filter(
             (Device.serial_number == device.serial_number) | (Device.name == device.name)).first()
@@ -50,6 +63,21 @@ def create_device(device: DeviceCreate, db: Session = Depends(get_db)):
 
 
 def get_devices(db: Session, skip: int = 0, limit: int = 10):
+    """
+        Retrieve a list of devices with optional pagination.
+
+        Args:
+            db (Session): The database session.
+            skip (int): The number of records to skip.
+            limit (int): The maximum number of records to return.
+
+        Returns:
+            List of devices.
+
+        Raises:
+            HTTPException: If any error occurs during the retrieval.
+        """
+
     try:
         db_devices = db.query(Device)
         if skip:
@@ -65,6 +93,19 @@ def get_devices(db: Session, skip: int = 0, limit: int = 10):
 
 
 def delete_device(db: Session, device_id: int):
+    """
+        Delete a device by its ID.
+
+        Args:
+            db (Session): The database session.
+            device_id (int): The ID of the device to be deleted.
+
+        Returns:
+            A message indicating successful deletion.
+
+        Raises:
+            HTTPException: If the device is not found or any other error occurs.
+        """
     try:
         db_device = db.query(Device).filter(Device.id == device_id).first()
         if db_device is None:
@@ -80,6 +121,21 @@ def delete_device(db: Session, device_id: int):
 
 
 def get_device_locations(db: Session, device_id: int, skip: int = 0, limit: int = 100):
+    """
+        Retrieve locations for a specific device with optional pagination.
+
+        Args:
+            db (Session): The database session.
+            device_id (int): The ID of the device.
+            skip (int): The number of records to skip.
+            limit (int): The maximum number of records to return.
+
+        Returns:
+            List of locations for the specified device.
+
+        Raises:
+            HTTPException: If any error occurs during the retrieval.
+        """
     try:
         db_locations = db.query(Location).filter(Location.device_id == device_id)
         if skip:
@@ -94,6 +150,18 @@ def get_device_locations(db: Session, device_id: int, skip: int = 0, limit: int 
 
 
 def get_last_location_for_all_devices(db: Session = Depends(get_db)):
+    """
+        Retrieve the last known location for all devices.
+
+        Args:
+            db (Session): The database session.
+
+        Returns:
+            List of the last known locations for all devices.
+
+        Raises:
+            HTTPException: If any error occurs during the retrieval.
+        """
     try:
         subquery = db.query(Location.device_id, func.max(Location.timestamp).label("max_timestamp")).group_by(
             Location.device_id).subquery()

@@ -10,7 +10,7 @@ services:
     networks:
       - mynetwork
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -37,31 +37,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    networks:
-      - mynetwork
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - rabbitmq
-
-  tcp_test:
-    build:
-      context: .
-      dockerfile: Dockerfile.tcp_test
-    depends_on:
-      - app
-    environment:
-      - HOST=app
-      - PORT=8000
-    networks:
-      - mynetwork
 
 volumes:
   postgres_data:

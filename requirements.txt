@@ -1,6 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standar]
 sqlalchemy
 asyncpg
 pydantic
 pika
+psycopg2-binary
+pytest

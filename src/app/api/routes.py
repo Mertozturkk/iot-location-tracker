@@ -38,7 +38,7 @@ def read_devices(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return devices
 
 
-@router.delete("/{device_id}", response_model=schemas.DeviceResponse)
+@router.delete("/{device_id}", response_model=schemas.DeleteResponse)
 def delete_device(device_id: int, db: Session = Depends(get_db)):
     """
         Delete a device by its ID.

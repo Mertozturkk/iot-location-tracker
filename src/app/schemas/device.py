@@ -10,6 +10,8 @@ class DeviceCreate(BaseModel):
     model: str
     is_active: Optional[bool] = True
 
+class DeleteResponse(BaseModel):
+    message: str
 
 class DeviceResponse(BaseModel):
     id: int
